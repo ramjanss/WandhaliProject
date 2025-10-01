@@ -20,9 +20,20 @@
 
     /* thumbnail cards for key people */
     .thumb-card{display:flex;gap:12px;align-items:center;background:transparent;padding:6px;border-radius:8px}
-    .thumb-card .thumb{width:76px;height:76px;border-radius:50%;object-fit:cover;flex-shrink:0;box-shadow:0 1px 6px rgba(16,24,40,0.08)}
     .thumb-card .info{padding-left:4px}
     .thumb-card .small{font-size:13px;color:var(--muted)}
+
+    /* rotor wrapper: photo stays static, ring (SVG) rotates above it */
+    .rotor{position:relative; width:96px; height:96px; display:inline-block; flex-shrink:0}
+    .rotor .thumb{width:76px;height:76px;border-radius:50%;object-fit:cover;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1;box-shadow:0 1px 6px rgba(16,24,40,0.08)}
+    /* rotating ring SVG centered above the photo */
+    .rotor .ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:96px;height:96px;z-index:2;pointer-events:none;animation:ring-rotate 6s linear infinite}
+    .rotor:hover .ring{animation-play-state:paused} /* pause on hover for readability */
+
+    @keyframes ring-rotate{
+      from{transform:translate(-50%,-50%) rotate(0deg)}
+      to{transform:translate(-50%,-50%) rotate(360deg)}
+    }
 
     /* member grid with small thumbnails */
     .member-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:10px}
@@ -34,8 +45,18 @@
     /* map and right column */
     #map{height:250px;border-radius:12px;margin-top:6px}
     aside .small-card{background:#fff;padding:12px;border-radius:10px;box-shadow:0 1px 6px rgba(16,24,40,0.04)}
-    .notice-list{padding-left:16px;margin:8px 0}
-    .notice-list li{margin-bottom:6px}
+
+    /* auto-scroll notices (and pause on hover) */
+    .notice-container{height:120px;overflow:hidden;position:relative}
+    .notice-list{list-style:none;padding:0;margin:0;animation:scroll-up 12s linear infinite}
+    .notice-list li{margin-bottom:6px;font-size:14px}
+    .notice-list li a{text-decoration:none;color:var(--accent)}
+    .notice-container:hover .notice-list{animation-play-state:paused}
+
+    @keyframes scroll-up{
+      0%{transform:translateY(0)}
+      100%{transform:translateY(-50%)} /* adjust if you add/remove items */
+    }
 
     /* schemes */
     .schemes{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;margin-top:14px}
@@ -76,15 +97,44 @@
   </nav>
 
   <div class="wrap">
-    <!-- Key People (Medium thumbnails) -->
+    <!-- Key People (with rotating ring overlay) -->
     <h2 id="members">Sarpanch & Gram Sevak</h2>
     <div style="display:flex;gap:28px;align-items:center">
       <div class="thumb-card">
-        <img src="images/sarpanch.jpg" alt="Sarpanch photo" class="thumb" />
+        <div class="rotor" aria-hidden="true">
+          <img src="images/sarpanch.jpg" alt="Sarpanch photo" class="thumb" />
+          <!-- SVG ring (rotates) - center is transparent so the photo is visible -->
+          <svg class="ring" viewBox="0 0 100 100" role="img" aria-label="decorative rotating ring">
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#0b5ed7" stop-opacity="1"/>
+                <stop offset="50%" stop-color="#06b6d4" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#0b5ed7" stop-opacity="1"/>
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="44" stroke="url(#ringGrad)" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="120 80"/>
+          </svg>
+        </div>
+
         <div class="info"><strong>Pravin M. Bhoyar</strong><div class="small">Sarpanch • 7588972246</div></div>
       </div>
+
       <div class="thumb-card">
-        <img src="images/gram-sevak.jpg" alt="Gram Sevak photo" class="thumb" />
+        <div class="rotor" aria-hidden="true">
+          <img src="images/gram-sevak.jpg" alt="Gram Sevak photo" class="thumb" />
+          <!-- same style ring (SVG inside its own svg so defs are local) -->
+          <svg class="ring" viewBox="0 0 100 100" role="img" aria-label="decorative rotating ring">
+            <defs>
+              <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="#0b5ed7" stop-opacity="1"/>
+                <stop offset="50%" stop-color="#06b6d4" stop-opacity="0.9"/>
+                <stop offset="100%" stop-color="#0b5ed7" stop-opacity="1"/>
+              </linearGradient>
+            </defs>
+            <circle cx="50" cy="50" r="44" stroke="url(#ringGrad)" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="120 80"/>
+          </svg>
+        </div>
+
         <div class="info"><strong>Sunita Rajput</strong><div class="small">Gram Sevak • +91-123456789</div></div>
       </div>
     </div>
@@ -92,14 +142,14 @@
     <!-- Members grid (thumbnails) -->
     <h2 style="margin-top:18px">Committee Members</h2>
     <div class="member-grid">
-      <div class="member"><img src="images/member1.jpg" alt="member"/><div class="mname">Anil Sheshrao Thawri</div><div class="msub">Up-Sarpanch</div></div>
-      <div class="member"><img src="images/member2.jpg" alt="member"/><div class="mname">Sanghamitra Anand Bhalerao</div><div class="msub">Member</div></div>
-      <div class="member"><img src="images/member3.jpg" alt="member"/><div class="mname">Sharda Vilas Choudhari</div><div class="msub">Member</div></div>
-      <div class="member"><img src="images/member4.jpg" alt="member"/><div class="mname">Rupal Manohar Dhote</div><div class="msub">Member</div></div>
-      <div class="member"><img src="images/member5.jpg" alt="member"/><div class="mname">Suchita Ananta Kumre</div><div class="msub">Member</div></div>
-      <div class="member"><img src="images/member6.jpg" alt="member"/><div class="mname">Mayavati Bajirao Tekam</div><div class="msub">Member</div></div>
-      <div class="member"><img src="images/member7.jpg" alt="member"/><div class="mname">Sagar Sanjay Bhoyar</div><div class="msub">Member</div></div>
-      <div class="member"><img src="images/member8.jpg" alt="member"/><div class="mname">Shubham Ramdas Somalkar</div><div class="msub">Member</div></div>
+      <div class="member"><img src="images/member1.jpg" alt="member"/><div><div class="mname">Anil Sheshrao Thawri</div><div class="msub">Up-Sarpanch</div></div></div>
+      <div class="member"><img src="images/member2.jpg" alt="member"/><div><div class="mname">Sanghamitra Anand Bhalerao</div><div class="msub">Member</div></div></div>
+      <div class="member"><img src="images/member3.jpg" alt="member"/><div><div class="mname">Sharda Vilas Choudhari</div><div class="msub">Member</div></div></div>
+      <div class="member"><img src="images/member4.jpg" alt="member"/><div><div class="mname">Rupal Manohar Dhote</div><div class="msub">Member</div></div></div>
+      <div class="member"><img src="images/member5.jpg" alt="member"/><div><div class="mname">Suchita Ananta Kumre</div><div class="msub">Member</div></div></div>
+      <div class="member"><img src="images/member6.jpg" alt="member"/><div><div class="mname">Mayavati Bajirao Tekam</div><div class="msub">Member</div></div></div>
+      <div class="member"><img src="images/member7.jpg" alt="member"/><div><div class="mname">Sagar Sanjay Bhoyar</div><div class="msub">Member</div></div></div>
+      <div class="member"><img src="images/member8.jpg" alt="member"/><div><div class="mname">Shubham Ramdas Somalkar</div><div class="msub">Member</div></div></div>
     </div>
 
     <!-- Map + Quick facts & Notices column -->
@@ -121,12 +171,17 @@
 
         <div class="card small-card" style="margin-top:12px">
           <h4 style="margin:0 0 6px">Latest Notices</h4>
-          <ul class="notice-list">
-             <li><a href="https://drive.google.com/file/d/1QBYQku5wX6crDfmu_cH6QhVE1Y2vcnvK/view?usp=drive_link">ग्रामसभा बैठक - 15 Aug 2025 (PDF)</a></li>
-	           <li><a href="https://drive.google.com/file/d/1gCZJe3xccNvRJQOJtgd-Ue5bMJpmbq4q/view?usp=sharing">जाहीरनामा - ३० सप्टेंबर २०२५ </a></li>
-             <li><a href="https://drive.google.com/file/d/1MGJeqzsNASqHEgiih05vflEp1nCOj3FC/view?usp=sharing">मुख्यमंत्री समृद्ध पंचायत राज अभियान | भव्य दिव्य ऑफर - ३० सप्टेंबर २०२५</a></li>
-             <li><a href="#">Road repair tender - 10 Jun 2025</a></li>
-          </ul>
+          <div class="notice-container">
+            <ul class="notice-list">
+              <li><a href="https://drive.google.com/file/d/1QBYQku5wX6crDfmu_cH6QhVE1Y2vcnvK/view?usp=drive_link">ग्रामसभा बैठक - 15 Aug 2025 (PDF)</a></li>
+              <li><a href="https://drive.google.com/file/d/1gCZJe3xccNvRJQOJtgd-Ue5bMJpmbq4q/view?usp=sharing">जाहीरनामा - ३० सप्टेंबर २०२५ </a></li>
+              <li><a href="https://drive.google.com/file/d/1MGJeqzsNASqHEgiih05vflEp1nCOj3FC/view?usp=sharing">मुख्यमंत्री समृद्ध पंचायत राज अभियान | भव्य दिव्य ऑफर - ३० सप्टेंबर २०२५</a></li>
+              <li><a href="#">Road repair tender - 10 Jun 2025</a></li>
+              <!-- Duplicate items to make the CSS scroll loop smooth; remove if you handle scrolling via JS -->
+              <li><a href="https://drive.google.com/file/d/1QBYQku5wX6crDfmu_cH6QhVE1Y2vcnvK/view?usp=drive_link">ग्रामसभा बैठक - 15 Aug 2025 (PDF)</a></li>
+              <li><a href="https://drive.google.com/file/d/1gCZJe3xccNvRJQOJtgd-Ue5bMJpmbq4q/view?usp=sharing">जाहीरनामा - ३० सप्टेंबर २०२५ </a></li>
+            </ul>
+          </div>
         </div>
 
         <div class="card small-card" style="margin-top:12px">
