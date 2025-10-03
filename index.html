@@ -19,13 +19,13 @@
     h2{margin-top:28px;font-size:22px;color:var(--accent)}
 
     /* thumbnail cards for key people */
-    .thumb-card{display:flex;gap:12px;align-items:center;background:transparent;padding:6px;border-radius:8px}
+    .thumb-card{display:flex;gap:12px;align-items:center;background:transparent;padding:6px;border-radius:16px}
     .thumb-card .info{padding-left:4px}
     .thumb-card .small{font-size:13px;color:var(--muted)}
 
     /* rotor wrapper: photo stays static, ring (SVG) rotates above it */
-    .rotor{position:relative; width:2.2in; height:2.2in; display:inline-block; flex-shrink:0}
-    .rotor .thumb{width:2in;height:2in;border-radius:50%;object-fit:cover;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1;box-shadow:0 1px 6px rgba(16,24,40,0.08)}
+    .rotor{position:relative; width:2in; height:2in; display:inline-block; flex-shrink:0}
+    .rotor .thumb{width:1.80in;height:1.80in;border-radius:50%;object-fit:cover;position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:1;box-shadow:0 1px 16px rgba(16,24,40,0.08)}
     /* rotating ring SVG centered above the photo */
     .rotor .ring{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:2.2in;height:2.2in;z-index:2;pointer-events:none;animation:ring-rotate 6s linear infinite}
     .rotor:hover .ring{animation-play-state:paused} /* pause on hover for readability */
