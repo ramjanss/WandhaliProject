@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="mr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Admin Panel - Gram Panchayat Wandhali</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<style>
+body{font-family:'Noto Sans',sans-serif;margin:20px;background:#f9fafb;color:#111;}
+h2{color:#0b5ed7;}
+form, .section{background:#fff;padding:14px;margin-bottom:20px;border-radius:10px;box-shadow:0 1px 6px rgba(16,24,40,0.1);}
+label{display:block;margin:8px 0 4px;}
+input[type=text], input[type=url]{width:100%;padding:6px;border-radius:6px;border:1px solid #ccc;}
+button{padding:6px 12px;margin-top:8px;border:none;border-radius:6px;background:#0b5ed7;color:#fff;cursor:pointer;}
+button.delete{background:#dc3545;}
+ul{list-style:none;padding:0;margin:0;}
+li{margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+hr{margin:14px 0;}
+</style>
+</head>
+<body>
+<h1>Admin Panel - Gram Panchayat Wandhali</h1>
+
+<!-- Notices -->
+<div class="section">
+<h2>Latest Notices</h2>
+<form id="noticeForm">
+<label>Notice Title</label>
+<input type="text" id="noticeTitle" required/>
+<label>Notice URL</label>
+<input type="url" id="noticeURL" required/>
+<button type="submit">Add Notice</button>
+</form>
+<ul id="noticeList"></ul>
+</div>
+
+<!-- Government Schemes -->
+<div class="section">
+<h2>Government Schemes</h2>
+<form id="schemeForm">
+<label>Scheme Title</label>
+<input type="text" id="schemeTitle" required/>
+<label>Scheme Description</label>
+<input type="text" id="schemeDesc" required/>
+<button type="submit">Add Scheme</button>
+</form>
+<ul id="schemeList"></ul>
+</div>
+
+<!-- Gallery -->
+<div class="section">
+<h2>Photo Gallery</h2>
+<form id="galleryForm">
+<label>Photo URL (or path)</label>
+<input type="url" id="photoURL" required/>
+<button type="submit">Add Photo</button>
+</form>
+<ul id="galleryList"></ul>
+</div>
+
+<script>
+// ----- UTILITY -----
+function saveList(key, list){ localStorage.setItem(key, JSON.stringify(list)); }
+function loadList(key){ return JSON.parse(localStorage.getItem(key)||'[]'); }
+
+// ----- NOTICES -----
+const noticeForm = document.getElementById('noticeForm');
+const noticeList = document.getElementById('noticeList');
+let notices = loadList('gpNotices');
+function renderNotices(){
+  noticeList.innerHTML='';
+  notices.forEach((n,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`${n.title} <a href="${n.url}" target="_blank"><i class="fa-solid fa-link"></i></a>
+    <button class="delete" onclick="deleteNotice(${i})">Delete</button>`;
+    noticeList.appendChild(li);
+  });
+}
+function deleteNotice(index){
+  if(confirm('Are you sure to delete this notice?')){
+    notices.splice(index,1);
+    saveList('gpNotices',notices);
+    renderNotices();
+  }
+}
+noticeForm.addEventListener('submit',e=>{
+  e.preventDefault();
+  const title=document.getElementById('noticeTitle').value.trim();
+  const url=document.getElementById('noticeURL').value.trim();
+  if(confirm('Add this notice?')){ notices.push({title,url}); saveList('gpNotices',notices); renderNotices(); noticeForm.reset(); }
+});
+renderNotices();
+
+// ----- SCHEMES -----
+const schemeForm=document.getElementById('schemeForm');
+const schemeList=document.getElementById('schemeList');
+let schemes = loadList('gpSchemes');
+function renderSchemes(){
+  schemeList.innerHTML='';
+  schemes.forEach((s,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`${s.title} - ${s.desc} <button class="delete" onclick="deleteScheme(${i})">Delete</button>`;
+    schemeList.appendChild(li);
+  });
+}
+function deleteScheme(index){
+  if(confirm('Are you sure to delete this scheme?')){
+    schemes.splice(index,1);
+    saveList('gpSchemes',schemes);
+    renderSchemes();
+  }
+}
+schemeForm.addEventListener('submit',e=>{
+  e.preventDefault();
+  const title=document.getElementById('schemeTitle').value.trim();
+  const desc=document.getElementById('schemeDesc').value.trim();
+  if(confirm('Add this scheme?')){ schemes.push({title,desc}); saveList('gpSchemes',schemes); renderSchemes(); schemeForm.reset(); }
+});
+renderSchemes();
+
+// ----- GALLERY -----
+const galleryForm=document.getElementById('galleryForm');
+const galleryList=document.getElementById('galleryList');
+let gallery = loadList('gpGallery');
+function renderGallery(){
+  galleryList.innerHTML='';
+  gallery.forEach((src,i)=>{
+    const li=document.createElement('li');
+    li.innerHTML=`<a href="${src}" target="_blank">View Photo</a> <button class="delete" onclick="deletePhoto(${i})">Delete</button>`;
+    galleryList.appendChild(li);
+  });
+}
+function deletePhoto(index){
+  if(confirm('Are you sure to delete this photo?')){
+    gallery.splice(index,1);
+    saveList('gpGallery',gallery);
+    renderGallery();
+  }
+}
+galleryForm.addEventListener('submit',e=>{
+  e.preventDefault();
+  const src=document.getElementById('photoURL').value.trim();
+  if(confirm('Add this photo to gallery?')){ gallery.push(src); saveList('gpGallery',gallery); renderGallery(); galleryForm.reset(); }
+});
+renderGallery();
+</script>
+</body>
+</html>
